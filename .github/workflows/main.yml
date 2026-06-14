@@ -1,0 +1,45 @@
+name: Linux Chrome Cloudflare Tunnel
+
+on: [push, workflow_dispatch]
+
+jobs:
+  desktop:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+    - name: Install Cloudflared via Official Repository
+      run: |
+       sudo mkdir -p --mode=0755 /usr/share/keyrings
+       curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | sudo tee /usr/share/keyrings/cloudflare-main.gpg > /dev/null
+       echo "deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/cloudflared.list
+       sudo apt update && sudo apt install cloudflared
+       
+    - name: Create Config Directory
+      run: mkdir -p ./chrome-config
+      
+    - name: Launch LinuxServer Chrome Container
+      run: |
+        docker run -d \
+          --name=chrome \
+          -e PUID=1000 \
+          -e PGID=1000 \
+          -e TZ=Etc/UTC \
+          -e CHROME_CLI=https://linuxserver.io \
+          -e USER_NAME=sklies \
+          -e PASSWORD=masd \
+          -p 3000:3000 \
+          -v ${{ github.workspace }}/chrome-config:/config \
+          --shm-size="4gb" \
+          --restart unless-stopped \
+          lscr.io/linuxserver/chrome:latest
+
+    - name: Start Cloudflare Tunnel and Print Link
+      run: |
+        echo "Starting Quick Cloudflare Tunnel..."
+        cloudflared tunnel --url http://localhost:3000 > cloudflared.log 2>&1 &
+        sleep 15
+        echo "=== YOUR CHROME URL IS BELOW ==="
+        grep -o 'https://[^ ]*trycloudflare.com' cloudflared.log || cat cloudflared.log
+        
+    - name: Hold Runner Open
+      run: tail -f /dev/null
