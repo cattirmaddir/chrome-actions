@@ -15,22 +15,22 @@ jobs:
        sudo apt update && sudo apt install cloudflared
        
     - name: Create Config Directory
-      run: mkdir -p ./chrome-config
+      run: mkdir -p ./opera-config
       
     - name: Launch LinuxServer Container
       run: |
         docker run -d \
-          --name=whatever \
+          --name=opera \
           -e PUID=1000 \
           -e PGID=1000 \
           -e TZ=Etc/UTC \
-          -e CHROME_CLI=google.com \
+          -e CHROME_CLI=https://www.google.com/ \
           -e CUSTOM_USER=M \
           -e PASSWORD=M \
           -e SELKIES_AUDIO_ENABLED=true
           -e SELKIES_MICROPHONE_ENABLED=true
           -p 3000:3000 \
-          -v ${{ github.workspace }}/chrome-config:/config \
+          -v ${{ github.workspace }}/opera-config:/config \
           --shm-size="4gb" \
           --restart unless-stopped \
           lscr.io/linuxserver/opera:latest
