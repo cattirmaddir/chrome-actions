@@ -17,21 +17,23 @@ jobs:
     - name: Create Config Directory
       run: mkdir -p ./chrome-config
       
-    - name: Launch LinuxServer Chrome Container
+    - name: Launch LinuxServer Container
       run: |
         docker run -d \
-          --name=chrome \
+          --name=whatever \
           -e PUID=1000 \
           -e PGID=1000 \
           -e TZ=Etc/UTC \
-          -e CHROME_CLI=https://linuxserver.io \
-          -e USER_NAME=sklies \
-          -e PASSWORD=masd \
+          -e CHROME_CLI=google.com \
+          -e CUSTOM_USER=M \
+          -e PASSWORD=M \
+          -e SELKIES_AUDIO_ENABLED=true
+          -e SELKIES_MICROPHONE_ENABLED=true
           -p 3000:3000 \
           -v ${{ github.workspace }}/chrome-config:/config \
           --shm-size="4gb" \
           --restart unless-stopped \
-          lscr.io/linuxserver/chrome:latest
+          lscr.io/linuxserver/opera:latest
 
     - name: Start Cloudflare Tunnel and Print Link
       run: |
