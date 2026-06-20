@@ -20,7 +20,7 @@ jobs:
     - name: Launch LinuxServer Container
       run: |
         docker run -d \
-          --name=opera \
+          --name=browser \
           -e PUID=1000 \
           -e PGID=1000 \
           -e TZ=Etc/UTC \
@@ -30,10 +30,10 @@ jobs:
           -e SELKIES_AUDIO_ENABLED=true \
           -e SELKIES_MICROPHONE_ENABLED=true \
           -p 3000:3000 \
-          -v ${{ github.workspace }}/opera-config:/config \
+          -v ${{ github.workspace }}/chromium-config:/config \
           --shm-size="4gb" \
           --restart unless-stopped \
-          lscr.io/linuxserver/opera:latest
+          lscr.io/linuxserver/chromium:latest
 
     - name: Start Cloudflare Tunnel and Print Link
       run: |
